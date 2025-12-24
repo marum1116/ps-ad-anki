@@ -1,0 +1,201 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+
+  <!-- ===== PWA / iOS ホーム画面対応 ===== -->
+  <title>暗記タップ</title>
+  <link rel="manifest" href="manifest.webmanifest">
+  <meta name="theme-color" content="#ffffff">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="暗記タップ">
+  <link rel="apple-touch-icon" href="icons/icon-180.png">
+
+  <style>
+    body{
+      margin:0;
+      font-family:-apple-system, system-ui, "Hiragino Sans", "Noto Sans JP", sans-serif;
+      background:#f6f7f8;
+      display:flex;
+      justify-content:center;
+      min-height:100dvh;
+    }
+    .app{
+      width:min(720px, 92vw);
+      padding:20px;
+    }
+    .card{
+      background:#fff;
+      border-radius:18px;
+      padding:20px;
+      box-shadow:0 10px 30px rgba(0,0,0,.08);
+    }
+    .counter{
+      display:flex;
+      justify-content:space-between;
+      font-size:14px;
+      color:#666;
+      margin-bottom:10px;
+    }
+    .tapArea{
+      padding:26px 16px;
+      border-radius:14px;
+      border:1px dashed #aaa;
+      background:#fafafa;
+      font-size:18px;
+      line-height:1.7;
+      cursor:pointer;
+      user-select:none;
+      white-space:pre-wrap;
+    }
+    .controls{
+      margin-top:12px;
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+    }
+    button{
+      border:none;
+      border-radius:10px;
+      padding:10px 12px;
+      font-size:14px;
+      cursor:pointer;
+    }
+    .reset{
+      background:#111;
+      color:#fff;
+    }
+    .jump{
+      background:#e9eaec;
+    }
+    .jump-group{
+      margin-top:16px;
+    }
+    .jump-title{
+      font-size:13px;
+      color:#666;
+      margin-bottom:6px;
+    }
+  </style>
+</head>
+<body>
+
+<main class="app">
+  <section class="card">
+    <div class="counter">
+      <div><strong id="pos">1</strong> / <span id="total">36</span></div>
+      <div>タップで次へ</div>
+    </div>
+
+    <div id="tapArea" class="tapArea"></div>
+
+    <div class="controls">
+      <button class="reset" id="resetBtn">リセット</button>
+    </div>
+
+    <div class="jump-group">
+      <div class="jump-title">分裂の方向</div>
+      <div class="controls">
+        <button class="jump" data-card="2">分裂タイプ1</button>
+        <button class="jump" data-card="4">分裂タイプ2</button>
+        <button class="jump" data-card="6">分裂タイプ3</button>
+        <button class="jump" data-card="8">分裂タイプ4</button>
+        <button class="jump" data-card="10">分裂タイプ5</button>
+        <button class="jump" data-card="12">分裂タイプ6</button>
+        <button class="jump" data-card="14">分裂タイプ7</button>
+        <button class="jump" data-card="16">分裂タイプ8</button>
+        <button class="jump" data-card="18">分裂タイプ9</button>
+      </div>
+    </div>
+
+    <div class="jump-group">
+      <div class="jump-title">統合の方向</div>
+      <div class="controls">
+        <button class="jump" data-card="20">統合タイプ1</button>
+        <button class="jump" data-card="22">統合タイプ2</button>
+        <button class="jump" data-card="24">統合タイプ3</button>
+        <button class="jump" data-card="26">統合タイプ4</button>
+        <button class="jump" data-card="28">統合タイプ5</button>
+        <button class="jump" data-card="30">統合タイプ6</button>
+        <button class="jump" data-card="32">統合タイプ7</button>
+        <button class="jump" data-card="34">統合タイプ8</button>
+        <button class="jump" data-card="36">統合タイプ9</button>
+      </div>
+    </div>
+  </section>
+</main>
+
+<script>
+const items = [
+  "分裂の方向：タイプ1",
+  "秩序正しいタイプ1が突然、タイプ4のように気分が変わりやすく、理性的でなくなる",
+  "分裂の方向：タイプ2",
+  "欠乏感のあるタイプ2が突然、タイプ8のように攻撃的で支配的になる",
+  "分裂の方向：タイプ3",
+  "駆り立てられているタイプ3が突然、タイプ9のように関わらなくなり、無関心になる",
+  "分裂の方向：タイプ4",
+  "打ちとけないタイプ4が突然、タイプ2のように過剰に人に関わり、しがみつく",
+  "分裂の方向：タイプ5",
+  "クールなタイプ5が突然、タイプ7のように活動的になり、意識が散漫になる",
+  "分裂の方向：タイプ6",
+  "忠実なタイプ6が突然、タイプ3のように競争心が強くなり、傲慢になる",
+  "分裂の方向：タイプ7",
+  "意識が散漫なタイプ7が突然、タイプ1のように完全主義的になり、批判的になる",
+  "分裂の方向：タイプ8",
+  "自信に満ちたタイプ8が突然、タイプ5のように秘密主義的で、恐れをなす",
+  "分裂の方向：タイプ9",
+  "受動的なタイプ9が突然、タイプ6のように不安になり、心配する",
+  "統合の方向：タイプ1",
+  "怒りを持つ批判的なタイプ1が、健全なタイプ7のように、もっと自由で喜びに満ちる",
+  "統合の方向：タイプ2",
+  "プライドがあり、自己欺瞞的なタイプ2が、健全なタイプ4のように、もっと自分自身のケアをし、感情的な面で自覚的になる",
+  "統合の方向：タイプ3",
+  "虚栄心が強く、欺瞞的なタイプ3が、健全なタイプ6のように、もっと協力的で忠実になる",
+  "統合の方向：タイプ4",
+  "妬みを抱き、激しい感情を持つタイプ4が、健全なタイプ1のように、もっと客観的で節操を持つ",
+  "統合の方向：タイプ5",
+  "自分ひとりでため込み、クールなタイプ5が、健全なタイプ8のように、もっと自信と決断力を持つ",
+  "統合の方向：タイプ6",
+  "恐れを持ち、悲観的なタイプ6が、健全なタイプ9のように、もっとリラックスし、楽観的になる",
+  "統合の方向：タイプ7",
+  "貪欲で、意識が散漫なタイプ7が、健全なタイプ5のように、もっと集中力と深みを増す",
+  "統合の方向：タイプ8",
+  "欲望が強く、支配的なタイプ8が、健全なタイプ2のように、もっと心を開き、思いやりを持つ",
+  "統合の方向：タイプ9",
+  "怠惰で、自己軽視をするタイプ9が、健全なタイプ3のように、成長志向でエネルギッシュになる"
+];
+
+let idx = 0;
+const tapArea = document.getElementById("tapArea");
+const posEl = document.getElementById("pos");
+document.getElementById("total").textContent = items.length;
+
+function render(){
+  tapArea.textContent = items[idx];
+  posEl.textContent = idx + 1;
+}
+
+tapArea.addEventListener("click", () => {
+  idx = (idx + 1) % items.length;
+  render();
+});
+
+document.getElementById("resetBtn").addEventListener("click", () => {
+  idx = 0;
+  render();
+});
+
+document.querySelectorAll(".jump").forEach(btn => {
+  btn.addEventListener("click", () => {
+    idx = Number(btn.dataset.card) - 1;
+    render();
+  });
+});
+
+render();
+</script>
+
+</body>
+</html>
